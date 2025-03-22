@@ -1,0 +1,424 @@
+{
+  "tests": [
+    {
+      "id": 1,
+      "question": "What comes next in the sequence? 2, 6, 12, 20, ?",
+      "options": ["30", "28", "32", "26"],
+      "correct_answer": "30",
+      "explanation": "The pattern follows n^2 + n. (1^2 + 1 = 2, 2^2 + 2 = 6, etc.)"
+    },
+    {
+      "id": 2,
+      "question": "Which word does not belong in the group? Apple, Banana, Carrot, Grape",
+      "options": ["Apple", "Banana", "Carrot", "Grape"],
+      "correct_answer": "Carrot",
+      "explanation": "Carrot is a vegetable, while the others are fruits."
+    },
+    {
+      "id": 3,
+      "question": "Find the missing number: 5, 10, 20, 40, ?",
+      "options": ["50", "60", "80", "100"],
+      "correct_answer": "80",
+      "explanation": "Each number is multiplied by 2 to get the next one."
+    },
+    {
+      "id": 4,
+      "question": "If A = 1, B = 2, C = 3, what is Z?",
+      "options": ["24", "25", "26", "27"],
+      "correct_answer": "26",
+      "explanation": "The position of Z in the alphabet is 26."
+    },
+    {
+      "id": 5,
+      "question": "What comes next in the pattern? ▲, ■, ▲, ■, ?",
+      "options": ["▲", "■", "●", "◆"],
+      "correct_answer": "▲",
+      "explanation": "The pattern alternates between ▲ and ■."
+    },
+    {
+      "id": 6,
+      "question": "Which number should replace the question mark? 3, 9, 27, ?, 243",
+      "options": ["54", "81", "72", "108"],
+      "correct_answer": "81",
+      "explanation": "Each number is multiplied by 3."
+    },
+    {
+      "id": 7,
+      "question": "Which shape does not belong: Circle, Square, Triangle, Cylinder?",
+      "options": ["Circle", "Square", "Triangle", "Cylinder"],
+      "correct_answer": "Cylinder",
+      "explanation": "All others are 2D shapes, while Cylinder is 3D."
+    },
+    {
+      "id": 8,
+      "question": "What comes next in the sequence? 1, 4, 9, 16, ?",
+      "options": ["20", "25", "30", "36"],
+      "correct_answer": "25",
+      "explanation": "These are squares of natural numbers: 1^2, 2^2, etc."
+    },
+    {
+      "id": 9,
+      "question": "What is the missing letter? A, C, E, G, ?",
+      "options": ["I", "H", "J", "K"],
+      "correct_answer": "I",
+      "explanation": "Every second letter of the alphabet is selected."
+    },
+    {
+      "id": 10,
+      "question": "Find the odd one out: Mercury, Venus, Earth, Sun",
+      "options": ["Mercury", "Venus", "Earth", "Sun"],
+      "correct_answer": "Sun",
+      "explanation": "Sun is a star, while others are planets."
+    },
+    {
+      "id": 11,
+      "question": "What is the next number in the sequence? 11, 22, 33, 44, ?",
+      "options": ["55", "66", "77", "88"],
+      "correct_answer": "55",
+      "explanation": "Each number increases by 11."
+    },
+    {
+      "id": 12,
+      "question": "What comes next? Monday, Tuesday, Wednesday, ?",
+      "options": ["Thursday", "Friday", "Saturday", "Sunday"],
+      "correct_answer": "Thursday",
+      "explanation": "The days of the week follow a set order."
+    },
+    {
+      "id": 13,
+      "question": "Find the missing shape in the sequence: ◼, ▲, ◼, ▲, ?",
+      "options": ["▲", "◼", "●", "◆"],
+      "correct_answer": "◼",
+      "explanation": "The pattern alternates between ◼ and ▲."
+    },
+    {
+      "id": 14,
+      "question": "If 5 + 3 = 16 and 4 + 2 = 12, what is 6 + 4?",
+      "options": ["20", "24", "22", "26"],
+      "correct_answer": "24",
+      "explanation": "Each sum follows the rule: (a + b) * 2."
+    },
+    {
+      "id": 15,
+      "question": "Which number does not belong? 2, 4, 6, 9, 10",
+      "options": ["2", "4", "6", "9"],
+      "correct_answer": "9",
+      "explanation": "All numbers except 9 are even."
+    },
+    {
+      "id": 16,
+      "question": "Complete the analogy: Bird is to Sky as Fish is to ?",
+      "options": ["Water", "Land", "Air", "Sand"],
+      "correct_answer": "Water",
+      "explanation": "Birds live in the sky, fish live in water - their natural habitats."
+    },
+    {
+      "id": 17,
+      "question": "What number should come next? 1, 3, 6, 10, ?",
+      "options": ["15", "14", "16", "13"],
+      "correct_answer": "15",
+      "explanation": "Each number adds the next counting number (2,3,4,5)."
+    },
+    {
+      "id": 18,
+      "question": "If RED = 27, BLUE = 30, what is GREEN?",
+      "options": ["35", "40", "45", "50"],
+      "correct_answer": "45",
+      "explanation": "Each letter value (A=1, B=2, etc.) is added together."
+    },
+    {
+      "id": 19,
+      "question": "Which word is the odd one out? Run, Walk, Jump, Table",
+      "options": ["Run", "Walk", "Jump", "Table"],
+      "correct_answer": "Table",
+      "explanation": "All others are verbs of movement, while Table is a noun."
+    },
+    {
+      "id": 20,
+      "question": "What comes next? AABABC?",
+      "options": ["A", "B", "C", "D"],
+      "correct_answer": "A",
+      "explanation": "The pattern repeats: AA, then B, then A, then B, then C."
+    },
+    {
+      "id": 21,
+      "question": "If Triangle = 3, Square = 4, what is Circle?",
+      "options": ["0", "1", "∞", "360"],
+      "correct_answer": "360",
+      "explanation": "The numbers represent degrees in a complete shape."
+    },
+    {
+      "id": 22,
+      "question": "Which number is missing? 2, 4, 8, 16, ?",
+      "options": ["24", "32", "30", "28"],
+      "correct_answer": "32",
+      "explanation": "Each number is multiplied by 2."
+    },
+    {
+      "id": 23,
+      "question": "Complete the pattern: 1A, 2B, 3C, ?",
+      "options": ["4D", "4A", "3D", "5D"],
+      "correct_answer": "4D",
+      "explanation": "Numbers increase by 1, letters follow alphabet order."
+    },
+    {
+      "id": 24,
+      "question": "If HAPPY = 5, SAD = 3, what is EXCITED?",
+      "options": ["5", "6", "7", "8"],
+      "correct_answer": "7",
+      "explanation": "The numbers represent the count of letters in each word."
+    },
+    {
+      "id": 25,
+      "question": "What comes next? 🌑, 🌓, 🌕, ?",
+      "options": ["🌑", "🌗", "🌓", "🌔"],
+      "correct_answer": "🌗",
+      "explanation": "This represents the phases of the moon."
+    },
+    {
+      "id": 26,
+      "question": "If water is to ice as liquid is to ?",
+      "options": ["Gas", "Solid", "Plasma", "Steam"],
+      "correct_answer": "Solid",
+      "explanation": "Water becomes ice when frozen, liquid becomes solid."
+    },
+    {
+      "id": 27,
+      "question": "Find the next number: 7, 14, 28, 56, ?",
+      "options": ["112", "98", "84", "70"],
+      "correct_answer": "112",
+      "explanation": "Each number is multiplied by 2."
+    },
+    {
+      "id": 28,
+      "question": "Which word doesn't belong? Dog, Cat, Lion, Tree",
+      "options": ["Dog", "Cat", "Lion", "Tree"],
+      "correct_answer": "Tree",
+      "explanation": "All others are animals, while Tree is a plant."
+    },
+    {
+      "id": 29,
+      "question": "What letter comes next? B, E, H, K, ?",
+      "options": ["M", "N", "O", "P"],
+      "correct_answer": "N",
+      "explanation": "Each letter skips two letters in the alphabet."
+    },
+    {
+      "id": 30,
+      "question": "Complete the sequence: 1, 4, 2, 5, 3, ?",
+      "options": ["6", "4", "7", "5"],
+      "correct_answer": "6",
+      "explanation": "Two sequences interleaved: 1,2,3 and 4,5,6"
+    },
+    {
+      "id": 31,
+      "question": "If BLUE is coded as EULB, how is RED coded?",
+      "options": ["DER", "ERD", "RDE", "EDR"],
+      "correct_answer": "DER",
+      "explanation": "The letters are written in reverse order."
+    },
+    {
+      "id": 32,
+      "question": "What number should replace X? 2:4 as 8:X",
+      "options": ["10", "12", "16", "20"],
+      "correct_answer": "16",
+      "explanation": "The second number is double the first number in both pairs."
+    },
+    {
+      "id": 33,
+      "question": "Which word is different from others? Ocean, Sea, Lake, River",
+      "options": ["Ocean", "Sea", "Lake", "River"],
+      "correct_answer": "River",
+      "explanation": "River is flowing water, while others are standing bodies of water."
+    },
+    {
+      "id": 34,
+      "question": "Complete the pattern: AZ, BY, CX, ?",
+      "options": ["DW", "DY", "EW", "DE"],
+      "correct_answer": "DW",
+      "explanation": "First letter moves forward in alphabet, second letter moves backward."
+    },
+    {
+      "id": 35,
+      "question": "If all cats are animals, and some animals are pets, then:",
+      "options": ["All cats are pets", "No cats are pets", "Some cats may be pets", "None of these"],
+      "correct_answer": "Some cats may be pets",
+      "explanation": "This is logical deduction - since some animals are pets and all cats are animals, some cats may be pets."
+    },
+    {
+      "id": 36,
+      "question": "What comes next? 2, 3, 5, 7, 11, ?",
+      "options": ["13", "14", "15", "16"],
+      "correct_answer": "13",
+      "explanation": "These are prime numbers in sequence."
+    },
+    {
+      "id": 37,
+      "question": "If PARIS is 21345, and SPAIN is 52346, what is RAIN?",
+      "options": ["4356", "4346", "3456", "3446"],
+      "correct_answer": "4346",
+      "explanation": "Each letter is assigned a number based on its position in the original codes."
+    },
+    {
+      "id": 38,
+      "question": "Which shape would complete the sequence? ○, □, △, ○, □, ?",
+      "options": ["○", "□", "△", "⬡"],
+      "correct_answer": "△",
+      "explanation": "The pattern repeats: circle, square, triangle."
+    },
+    {
+      "id": 39,
+      "question": "What is the relationship? 8:4 as 10:?",
+      "options": ["5", "6", "7", "8"],
+      "correct_answer": "5",
+      "explanation": "The second number is half of the first number."
+    },
+    {
+      "id": 40,
+      "question": "Complete: Shoe is to Foot as Glove is to ?",
+      "options": ["Hand", "Arm", "Finger", "Palm"],
+      "correct_answer": "Hand",
+      "explanation": "Shoes protect feet as gloves protect hands."
+    },
+    {
+      "id": 41,
+      "question": "Find the pattern: 3, 6, 12, 24, ?",
+      "options": ["36", "48", "42", "30"],
+      "correct_answer": "48",
+      "explanation": "Each number is multiplied by 2."
+    },
+    {
+      "id": 42,
+      "question": "If WHITE is 12345 and BLACK is 67890, what is BLUE?",
+      "options": ["6725", "6735", "6745", "6755"],
+      "correct_answer": "6735",
+      "explanation": "Letters are assigned numbers based on their position in the codes."
+    },
+    {
+      "id": 43,
+      "question": "Which doesn't belong? Painting, Sculpture, Dance, Photography",
+      "options": ["Painting", "Sculpture", "Dance", "Photography"],
+      "correct_answer": "Dance",
+      "explanation": "Dance is a performing art, while others are visual arts."
+    },
+    {
+      "id": 44,
+      "question": "What comes next? AABBCCAABBCC?",
+      "options": ["A", "B", "C", "D"],
+      "correct_answer": "A",
+      "explanation": "The pattern AABBCC repeats."
+    },
+    {
+      "id": 45,
+      "question": "If Square has 4 sides, Pentagon has 5 sides, what has 8 sides?",
+      "options": ["Hexagon", "Heptagon", "Octagon", "Nonagon"],
+      "correct_answer": "Octagon",
+      "explanation": "Octagon has 8 sides (oct- means eight)."
+    },
+    {
+      "id": 46,
+      "question": "Complete the sequence: 1, 1, 2, 3, 5, ?",
+      "options": ["6", "7", "8", "9"],
+      "correct_answer": "8",
+      "explanation": "This is the Fibonacci sequence where each number is the sum of the previous two."
+    },
+    {
+      "id": 47,
+      "question": "If DOCTOR = 6, ENGINEER = 8, what is PROFESSOR?",
+      "options": ["7", "8", "9", "10"],
+      "correct_answer": "9",
+      "explanation": "The numbers represent the count of letters in each word."
+    },
+    {
+      "id": 48,
+      "question": "Which is different? North, West, Up, South",
+      "options": ["North", "West", "Up", "South"],
+      "correct_answer": "Up",
+      "explanation": "Up is vertical direction, while others are compass directions."
+    },
+    {
+      "id": 49,
+      "question": "What's next? January, March, May, July, ?",
+      "options": ["August", "September", "October", "November"],
+      "correct_answer": "September",
+      "explanation": "Every other month is selected."
+    },
+    {
+      "id": 50,
+      "question": "If CAT is DOG, DOG is MOUSE, what is MOUSE?",
+      "options": ["RAT", "CAT", "ELEPHANT", "LION"],
+      "correct_answer": "CAT",
+      "explanation": "Each animal is replaced by the next in the cycle: CAT→DOG→MOUSE→CAT."
+    },
+    {
+      "id": 51,
+      "question": "Complete: Book is to Reading as Movie is to ?",
+      "options": ["Acting", "Watching", "Playing", "Writing"],
+      "correct_answer": "Watching",
+      "explanation": "Reading is how we consume books, watching is how we consume movies."
+    },
+    {
+      "id": 52,
+      "question": "What number comes next? 100, 95, 85, 70, ?",
+      "options": ["50", "55", "60", "65"],
+      "correct_answer": "50",
+      "explanation": "The difference increases by 5 each time (-5, -10, -15, -20)."
+    },
+    {
+      "id": 53,
+      "question": "If HELLO = WORLD, what is GOODBYE?",
+      "options": ["WELCOME", "FAREWELL", "UNIVERSE", "PLANET"],
+      "correct_answer": "UNIVERSE",
+      "explanation": "The relationship is that WORLD is paired with HELLO, so UNIVERSE pairs with GOODBYE as both are opposites."
+    },
+    {
+      "id": 54,
+      "question": "Which season doesn't belong? Summer, Autumn, Morning, Winter",
+      "options": ["Summer", "Autumn", "Morning", "Winter"],
+      "correct_answer": "Morning",
+      "explanation": "Morning is a time of day, while others are seasons."
+    },
+    {
+      "id": 55,
+      "question": "What comes next in the pattern? 🎵, 🎶, 🎵, 🎶, ?",
+      "options": ["🎵", "🎶", "🎸", "🎹"],
+      "correct_answer": "🎵",
+      "explanation": "The pattern alternates between single and double musical notes."
+    },
+    {
+      "id": 56,
+      "question": "If X=1, XX=2, XXX=3, what is XXXX?",
+      "options": ["0", "4", "40", "400"],
+      "correct_answer": "4",
+      "explanation": "Each X represents 1, and they are counted."
+    },
+    {
+      "id": 57,
+      "question": "Complete the analogy: Tree:Forest as Star:?",
+      "options": ["Sky", "Galaxy", "Universe", "Space"],
+      "correct_answer": "Galaxy",
+      "explanation": "A forest is a collection of trees, as a galaxy is a collection of stars."
+    },
+    {
+      "id": 58,
+      "question": "What number should come next? 2, 6, 18, 54, ?",
+      "options": ["108", "162", "216", "270"],
+      "correct_answer": "162",
+      "explanation": "Each number is multiplied by 3."
+    },
+    {
+      "id": 59,
+      "question": "If RAINBOW has 7 colors, SPECTRUM has 7 colors, what does PRISM have?",
+      "options": ["6 colors", "7 colors", "8 colors", "9 colors"],
+      "correct_answer": "7 colors",
+      "explanation": "A prism creates the same spectrum of 7 colors as a rainbow."
+    },
+    {
+      "id": 60,
+      "question": "Complete the pattern: ⚀, ⚁, ⚂, ?",
+      "options": ["⚃", "⚄", "⚅", "⚀"],
+      "correct_answer": "⚃",
+      "explanation": "These are dice faces in order from 1 to 4 dots."
+    }
+  ]
+} 
