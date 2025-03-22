@@ -1,6 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import testData from '../data/tests.json';
+import { testService } from '../services/testService';
+import testsData from '../data/tests.json';
 import { AbstractThink } from './AbstractThink';
 
 interface Test {
@@ -15,7 +16,19 @@ interface TestSession {
   questions: Test[];
   currentQuestionIndex: number;
   correctAnswers: number;
-  answers: { [key: number]: string };
+}
+
+interface TestResult {
+  questionType: string;
+  correct: boolean;
+  timeTaken: number;
+}
+
+interface MLPrediction {
+  recommendations: string[];
+  strengths: string[];
+  weaknesses: string[];
+  confidence_score: number;
 }
 
 export const Tests = () => {
@@ -25,6 +38,10 @@ export const Tests = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string>('');
   const [showExplanation, setShowExplanation] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [testResults, setTestResults] = useState<TestResult[]>([]);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [prediction, setPrediction] = useState<MLPrediction | null>(null);
+  const [showPrediction, setShowPrediction] = useState(false);
 
   useEffect(() => {
     // Proovi laadida salvestatud sessioon
@@ -37,67 +54,51 @@ export const Tests = () => {
   }, []);
 
   const handleStartTest = () => {
-    // Sega küsimused ja vali 30
-    const shuffledQuestions = [...testData.tests]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 30);
-
-    const newSession: TestSession = {
-      questions: shuffledQuestions,
-      currentQuestionIndex: 0,
-      correctAnswers: 0,
-      answers: {}
-    };
-
-    setSession(newSession);
-    setCurrentTest(shuffledQuestions[0]);
+    const randomTest = testsData.tests[Math.floor(Math.random() * testsData.tests.length)];
+    setCurrentTest(randomTest);
     setSelectedAnswer('');
     setShowExplanation(false);
     setIsCorrect(null);
-
-    // Salvesta sessioon
-    localStorage.setItem('testSession', JSON.stringify(newSession));
+    setStartTime(Date.now());
   };
 
-  const handleAnswerSubmit = () => {
-    if (session && currentTest && selectedAnswer) {
-      const isAnswerCorrect = selectedAnswer === currentTest.correct_answer;
-      setIsCorrect(isAnswerCorrect);
-      setShowExplanation(true);
+  const handleAnswerSubmit = async () => {
+    if (!currentTest || !selectedAnswer) return;
 
-      const updatedSession = {
-        ...session,
-        correctAnswers: isAnswerCorrect ? session.correctAnswers + 1 : session.correctAnswers,
-        answers: {
-          ...session.answers,
-          [currentTest.id]: selectedAnswer
-        }
-      };
+    const timeTaken = (Date.now() - startTime) / 1000; // Aeg sekundites
+    const correct = selectedAnswer === currentTest.correct_answer;
+    
+    setIsCorrect(correct);
+    setShowExplanation(true);
 
-      setSession(updatedSession);
-      localStorage.setItem('testSession', JSON.stringify(updatedSession));
+    // Lisa tulemus
+    const result: TestResult = {
+      questionType: testService.determineQuestionType(currentTest.question),
+      correct,
+      timeTaken
+    };
+    
+    setTestResults(prev => [...prev, result]);
+
+    // Kui on 5 vastust olemas, küsi ennustust
+    if (testResults.length >= 4) {
+      try {
+        const mlResponse = await testService.submitTestResults(1, [...testResults, result]);
+        setPrediction(mlResponse);
+        setShowPrediction(true);
+      } catch (error) {
+        console.error('Error getting ML prediction:', error);
+      }
     }
   };
 
   const handleNextQuestion = () => {
-    if (session) {
-      const nextIndex = session.currentQuestionIndex + 1;
-      
-      if (nextIndex < session.questions.length) {
-        const updatedSession = {
-          ...session,
-          currentQuestionIndex: nextIndex
-        };
-        
-        setSession(updatedSession);
-        setCurrentTest(session.questions[nextIndex]);
-        setSelectedAnswer('');
-        setShowExplanation(false);
-        setIsCorrect(null);
-        
-        localStorage.setItem('testSession', JSON.stringify(updatedSession));
-      }
+    if (showPrediction) {
+      setTestResults([]);
+      setPrediction(null);
+      setShowPrediction(false);
     }
+    handleStartTest();
   };
 
   const handleExitTest = () => {
@@ -113,6 +114,54 @@ export const Tests = () => {
       navigate('/dashboard');
     }
   };
+
+  if (showPrediction && prediction) {
+    return (
+      <div className="max-w-2xl mx-auto p-6">
+        <h2 className="text-2xl font-bold mb-4">Sinu tulemuste analüüs</h2>
+        
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold mb-2">Soovitused:</h3>
+          <ul className="list-disc pl-5">
+            {prediction.recommendations.map((rec, index) => (
+              <li key={index} className="mb-2">{rec}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold mb-2">Tugevused:</h3>
+          <ul className="list-disc pl-5">
+            {prediction.strengths.map((strength, index) => (
+              <li key={index} className="mb-2">{strength}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mb-6">
+          <h3 className="text-xl font-semibold mb-2">Arendamist vajavad oskused:</h3>
+          <ul className="list-disc pl-5">
+            {prediction.weaknesses.map((weakness, index) => (
+              <li key={index} className="mb-2">{weakness}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mb-6">
+          <p className="text-lg">
+            Ennustuse usaldusscore: {(prediction.confidence_score * 100).toFixed(1)}%
+          </p>
+        </div>
+
+        <button
+          onClick={handleNextQuestion}
+          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors"
+        >
+          Jätka testimist
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100">
