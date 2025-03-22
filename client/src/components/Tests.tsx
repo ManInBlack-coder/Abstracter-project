@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { testService } from '../services/testService';
 import testsData from '../data/tests.json';
@@ -46,6 +46,7 @@ export const Tests = () => {
   useEffect(() => {
     // Proovi laadida salvestatud sessioon
     const savedSession = localStorage.getItem('testSession');
+    console.log('Saved session:', savedSession);
     if (savedSession) {
       const parsedSession = JSON.parse(savedSession);
       setSession(parsedSession);
@@ -54,12 +55,36 @@ export const Tests = () => {
   }, []);
 
   const handleStartTest = () => {
-    const randomTest = testsData.tests[Math.floor(Math.random() * testsData.tests.length)];
-    setCurrentTest(randomTest);
+    console.log('handleStartTest called');
+    console.log('testsData:', testsData);
+    
+    // Vali 30 juhuslikku küsimust
+    const allQuestions = [...testsData.tests]; // Kopeeri kõik küsimused
+    const selectedQuestions: Test[] = [];
+    
+    // Vali juhuslikult 30 küsimust
+    for (let i = 0; i < 20 && allQuestions.length > 0; i++) {
+      const randomIndex = Math.floor(Math.random() * allQuestions.length);
+      selectedQuestions.push(allQuestions[randomIndex]);
+      allQuestions.splice(randomIndex, 1); // Eemalda valitud küsimus
+    }
+    
+    // Loo uus sessioon 30 küsimusega
+    const newSession = {
+      questions: selectedQuestions,
+      currentQuestionIndex: 0,
+      correctAnswers: 0
+    };
+    console.log('Creating new session with questions:', newSession);
+    setSession(newSession);
+    
+    // Sea esimene küsimus aktiivseks
+    setCurrentTest(selectedQuestions[0]);
     setSelectedAnswer('');
     setShowExplanation(false);
     setIsCorrect(null);
     setStartTime(Date.now());
+    console.log('Test alustatud');
   };
 
   const handleAnswerSubmit = async () => {
@@ -80,8 +105,8 @@ export const Tests = () => {
     
     setTestResults(prev => [...prev, result]);
 
-    // Kui on 5 vastust olemas, küsi ennustust
-    if (testResults.length >= 4) {
+    // Kui on 20 vastust olemas, küsi ennustust
+    if (testResults.length >= 19) {
       try {
         const mlResponse = await testService.submitTestResults(1, [...testResults, result]);
         setPrediction(mlResponse);
@@ -98,7 +123,26 @@ export const Tests = () => {
       setPrediction(null);
       setShowPrediction(false);
     }
-    handleStartTest();
+
+    if (session) {
+      const nextIndex = session.currentQuestionIndex + 1;
+      if (nextIndex < session.questions.length) {
+        // Liigume järgmise küsimuse juurde
+        setSession({
+          ...session,
+          currentQuestionIndex: nextIndex,
+          correctAnswers: isCorrect ? session.correctAnswers + 1 : session.correctAnswers
+        });
+        setCurrentTest(session.questions[nextIndex]);
+        setSelectedAnswer('');
+        setShowExplanation(false);
+        setIsCorrect(null);
+        setStartTime(Date.now());
+      } else {
+        // Test on lõppenud
+        handleEndTest();
+      }
+    }
   };
 
   const handleExitTest = () => {
@@ -132,9 +176,12 @@ export const Tests = () => {
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2">Tugevused:</h3>
           <ul className="list-disc pl-5">
-            {prediction.strengths.map((strength, index) => (
-              <li key={index} className="mb-2">{strength}</li>
-            ))}
+            {prediction.strengths.length > 0 ? 
+              prediction.strengths.map((strength, index) => (
+                <li key={index} className="mb-2">{strength}</li>
+              )) : 
+              <p>Kahjuks ei tuvastatud tugevusi</p>
+            }
           </ul>
         </div>
 
@@ -157,7 +204,7 @@ export const Tests = () => {
           onClick={handleNextQuestion}
           className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors"
         >
-          Jätka testimist
+          Lõpetada test
         </button>
       </div>
     );
@@ -183,7 +230,7 @@ export const Tests = () => {
                   onClick={handleExitTest}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold shadow-md hover:bg-blue-700 transition-all duration-200"
                 >
-                  Salvesta ja Välju
+                  Välju
                 </button>
               )}
               <button
@@ -205,7 +252,7 @@ export const Tests = () => {
                   Valmis alustama abstraktse mõtlemise testi?
                 </h3>
                 <p className="text-gray-600 mb-8">
-                  Test koosneb 30 küsimusest. Saad testi igal ajal salvestada ja hiljem jätkata.
+                  Test koosneb 20 küsimusest. See Test aitab teil kinnistada oma abstraktse mõtlemise oskusi.
                 </p>
                 <button
                   onClick={handleStartTest}

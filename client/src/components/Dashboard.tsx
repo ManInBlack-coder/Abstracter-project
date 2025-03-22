@@ -65,7 +65,7 @@ export const Dashboard = () => {
                     <span className="text-gray-600">Username:</span>
                     <span className="font-medium text-indigo-700">{username}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-col items-center space-x-2">
                     <span className="text-gray-600">User ID:</span>
                     <span className="font-medium text-indigo-700">{userId}</span>
                   </div>
