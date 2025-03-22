@@ -46,7 +46,6 @@ export const Tests = () => {
   useEffect(() => {
     // Proovi laadida salvestatud sessioon
     const savedSession = localStorage.getItem('testSession');
-    console.log('Saved session:', savedSession);
     if (savedSession) {
       const parsedSession = JSON.parse(savedSession);
       setSession(parsedSession);
