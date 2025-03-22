@@ -12,6 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:5173") // Lubame päringud Vite arendusserverist
 public class AuthController {
 
     @Autowired
@@ -26,13 +27,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Email already exists");
         }
 
+        if (userRepository.existsByUsername(request.getUsername())) {
+            return ResponseEntity.badRequest().body("Username already exists");
+        }
+
         User user = new User();
         user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         response.put("message", "User registered successfully");
+        response.put("userId", user.getId().toString());
         return ResponseEntity.ok(response);
     }
 
@@ -45,8 +52,10 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
 
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         response.put("message", "Login successful");
+        response.put("userId", user.getId().toString());
+        response.put("username", user.getUsername());
         return ResponseEntity.ok(response);
     }
 } 
