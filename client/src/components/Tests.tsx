@@ -101,7 +101,7 @@ export const Tests = () => {
   };
 
   const handleExitTest = () => {
-    if (confirm('Kas soovid testi salvestada ja väljuda? Saad hiljem jätkata samast kohast.')) {
+    if (session) {
       navigate('/dashboard');
     }
   };
