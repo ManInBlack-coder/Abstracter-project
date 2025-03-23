@@ -39,7 +39,7 @@ public class SecurityConfig {
             .and()
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/api/auth/**", "/api/submit-test/**", "/api/test/**").permitAll()
+            .requestMatchers("/api/auth/**", "/api/submit-test/**", "/api/test/**", "/ws/**", "/topic/**", "/api/stats/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement()
@@ -56,12 +56,13 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "x-client-info", "x-client-version", "x-client-id"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/ws/**", configuration);
         return source;
     }
 
