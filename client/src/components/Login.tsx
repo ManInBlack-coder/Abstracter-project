@@ -74,6 +74,15 @@ export const Login = () => {
               Sign in
             </button>
           </div>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+            >
+              Don't have an account? Register here
+            </button>
+          </div>
         </form>
       </div>
     </div>

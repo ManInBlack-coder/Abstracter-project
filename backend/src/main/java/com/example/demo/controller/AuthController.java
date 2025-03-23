@@ -51,11 +51,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
+            if (request.getEmail() == null || request.getPassword() == null) {
+                return ResponseEntity.badRequest().body(new AuthResponse("Email and password are required"));
+            }
+
             User user = userService.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
             if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-                throw new RuntimeException("Invalid password");
+                return ResponseEntity.badRequest().body(new AuthResponse("Invalid password"));
             }
             
             UserDetails userDetails = userService.loadUserByUsername(user.getEmail());

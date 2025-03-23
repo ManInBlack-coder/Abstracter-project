@@ -5,6 +5,22 @@ public class AuthRequest {
     private String username;
     private String password;
 
+    // Default constructor
+    public AuthRequest() {}
+
+    // Constructor for login
+    public AuthRequest(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    // Constructor for registration
+    public AuthRequest(String email, String username, String password) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+    }
+
     public String getEmail() {
         return email;
     }

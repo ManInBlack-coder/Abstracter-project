@@ -39,7 +39,8 @@ public class SecurityConfig {
             .and()
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/api/auth/**", "/api/submit-test/**", "/api/test/**", "/ws/**", "/topic/**", "/api/stats/**").permitAll()
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/ws/**", "/topic/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .sessionManagement()
@@ -62,7 +63,6 @@ public class SecurityConfig {
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        source.registerCorsConfiguration("/ws/**", configuration);
         return source;
     }
 

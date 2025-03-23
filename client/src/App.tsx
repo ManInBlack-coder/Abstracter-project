@@ -3,35 +3,18 @@ import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { Dashboard } from './components/Dashboard';
 import { Tests } from './components/Tests';
-import { authService } from './services/authService';
-
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  return authService.isAuthenticated() ? <>{children}</> : <Navigate to="/login" />;
-};
+import { LandingPage } from './components/LandingPage';
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/tests"
-          element={
-            <PrivateRoute>
-              <Tests />
-            </PrivateRoute>
-          }
-        />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tests" element={<Tests />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
