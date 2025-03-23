@@ -26,28 +26,31 @@ export const Dashboard = () => {
 
   useEffect(() => {
     const initializeDashboard = async () => {
-      const maxRetries = 8;
+      const maxRetries = 10;
       const retryDelay = 2000;
 
       const fetchDataWithRetry = async (retryCount = 0) => {
-        if (!authService.isAuthenticated()) {
-          console.log('Not authenticated, redirecting to login');
-          navigate('/login');
-          return;
-        }
-
-        const id = authService.getUserId();
+        console.log(`Fetch attempt ${retryCount + 1}/${maxRetries}`);
+        
+        // Get fresh token on each attempt
         const token = localStorage.getItem('token');
+        const id = localStorage.getItem('userId');
 
-        if (!id || !token) {
-          console.log('Missing credentials:', { hasId: !!id, hasToken: !!token });
-          navigate('/login');
-          return;
+        if (!token || !id) {
+          console.log('Missing credentials, waiting before retry...');
+          if (retryCount < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            return fetchDataWithRetry(retryCount + 1);
+          } else {
+            console.log('Max retries reached, redirecting to login');
+            navigate('/login');
+            return;
+          }
         }
 
         try {
           setUserId(id);
-          setUsername(authService.getUsername());
+          setUsername(localStorage.getItem('username'));
 
           const client = new Client({
             webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
@@ -91,9 +94,18 @@ export const Dashboard = () => {
                     console.error('Stats authentication failed');
                     const errorText = await statsResponse.text();
                     console.error('Error details:', errorText);
-                    authService.logout();
-                    navigate('/login');
-                    return;
+                    
+                    // Instead of immediate logout, try to retry
+                    if (retryCount < maxRetries) {
+                      console.log('Auth failed, retrying...');
+                      await new Promise(resolve => setTimeout(resolve, retryDelay));
+                      return fetchDataWithRetry(retryCount + 1);
+                    } else {
+                      console.log('Max retries reached after auth failure');
+                      authService.logout();
+                      navigate('/login');
+                      return;
+                    }
                   }
                   throw new Error('Failed to fetch stats');
                 }
@@ -127,12 +139,12 @@ export const Dashboard = () => {
                 console.error('Error fetching data:', error);
                 if (retryCount < maxRetries) {
                   console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
-                  setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
+                  await new Promise(resolve => setTimeout(resolve, retryDelay));
+                  return fetchDataWithRetry(retryCount + 1);
                 } else {
                   console.log('Max retries reached');
-                  if (!authService.isAuthenticated()) {
-                    navigate('/login');
-                  }
+                  authService.logout();
+                  navigate('/login');
                 }
               }
             },
@@ -162,8 +174,10 @@ export const Dashboard = () => {
         } catch (error) {
           console.error('Error in dashboard initialization:', error);
           if (retryCount < maxRetries) {
-            setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            return fetchDataWithRetry(retryCount + 1);
           } else {
+            console.log('Max retries reached in error handler');
             authService.logout();
             navigate('/login');
           }
