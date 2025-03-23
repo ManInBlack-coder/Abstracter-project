@@ -26,7 +26,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     const initializeDashboard = async () => {
-      const maxRetries = 3;
+      const maxRetries = 8;
       const retryDelay = 1000;
 
       const fetchDataWithRetry = async (retryCount = 0) => {
@@ -53,7 +53,7 @@ export const Dashboard = () => {
             heartbeatIncoming: 4000,
             heartbeatOutgoing: 4000,
             connectHeaders: {
-              'Authorization': `Bearer ${token}`
+              Authorization: `Bearer ${token}`
             },
             onConnect: async () => {
               console.log('Connected to WebSocket');
@@ -62,12 +62,12 @@ export const Dashboard = () => {
                 client.subscribe('/topic/stats/' + id, (message: Message) => {
                   const newStats = JSON.parse(message.body) as CategoryStats[];
                   setStats(newStats);
-                });
+                }, { Authorization: `Bearer ${token}` });
 
-                const headers = {
+                const headers = new Headers({
                   'Authorization': `Bearer ${token}`,
                   'Content-Type': 'application/json'
-                };
+                });
 
                 const [statsResponse, recommendationResponse] = await Promise.all([
                   fetch(`http://localhost:8080/api/stats/${id}`, {
@@ -82,6 +82,12 @@ export const Dashboard = () => {
                   })
                 ]);
 
+                if (statsResponse.status === 403 || recommendationResponse.status === 403) {
+                  console.log('Authentication failed, redirecting to login');
+                  navigate('/login');
+                  return;
+                }
+
                 if (!statsResponse.ok || !recommendationResponse.ok) {
                   throw new Error('Failed to fetch data');
                 }
@@ -94,14 +100,13 @@ export const Dashboard = () => {
                 setIsLoading(false);
               } catch (error) {
                 console.error('Error fetching data:', error);
-                if (error instanceof Error && error.message === 'Failed to fetch data') {
-                  if (retryCount < maxRetries) {
-                    console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
-                    setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
-                  } else {
-                    console.log('Max retries reached, redirecting to login');
-                    navigate('/login');
-                  }
+                if (retryCount < maxRetries) {
+                  console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
+                  setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
+                } else {
+                  console.log('Max retries reached, redirecting to login');
+                  alert('Application has crashed. Directing to login page.');
+                  navigate('/login');
                 }
               }
             },

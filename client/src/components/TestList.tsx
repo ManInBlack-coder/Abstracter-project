@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/authService';
+
 interface TestCategory {
   id: string;
   title: string;
