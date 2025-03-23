@@ -2,11 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -16,9 +16,16 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Transactional
+    public void clearTransactionState() {
+        // Execute a simple query to reset transaction state
+        userRepository.flush();
+        // Count users to force a new transaction without deleting data
+        userRepository.count();
     }
 
     public User save(User user) {

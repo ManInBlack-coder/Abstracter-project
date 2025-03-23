@@ -3,7 +3,6 @@ package com.example.demo.service;
 import com.example.demo.dto.MLRequest;
 import com.example.demo.dto.RecommendationResponse;
 import com.example.demo.model.TestResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,7 +13,6 @@ public class MLService {
     private final String ML_SERVICE_URL = "http://localhost:5001";
     private final RestTemplate restTemplate;
     
-    @Autowired
     public MLService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }

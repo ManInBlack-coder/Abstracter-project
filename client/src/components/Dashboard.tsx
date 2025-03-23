@@ -50,6 +50,7 @@ export const Dashboard = () => {
 
         try {
           setUserId(id);
+          
           setUsername(localStorage.getItem('username'));
 
           const client = new Client({
@@ -301,7 +302,7 @@ export const Dashboard = () => {
                 {/* Soovitused */}
                 {recommendation && (
                   <div className="md:col-span-2 bg-white rounded-xl p-6 shadow-lg mb-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Viimased Soovitused</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Viimase testi soorituse põhjal soovitused</h3>
                     <div className="bg-blue-50 rounded-lg p-4">
                       <div className="flex items-center mb-2">
                         <div className="flex-shrink-0">

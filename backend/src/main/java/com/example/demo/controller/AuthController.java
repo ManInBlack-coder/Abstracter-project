@@ -5,7 +5,6 @@ import com.example.demo.dto.AuthResponse;
 import com.example.demo.model.User;
 import com.example.demo.service.JwtService;
 import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +19,6 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    @Autowired
     public AuthController(UserService userService, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -55,6 +53,9 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(new AuthResponse("Email and password are required"));
             }
 
+            // Clear any existing transaction state
+            userService.clearTransactionState();
+
             User user = userService.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
             
@@ -73,7 +74,16 @@ public class AuthController {
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new AuthResponse("Login failed: " + e.getMessage()));
+            // Log the full stack trace
+            e.printStackTrace();
+            // Return a more specific error message
+            String errorMessage = e.getMessage();
+            if (errorMessage.contains("transaction is aborted")) {
+                return ResponseEntity.status(503)
+                    .body(new AuthResponse("Database is temporarily unavailable. Please try again."));
+            }
+            return ResponseEntity.badRequest()
+                .body(new AuthResponse("Login failed: " + errorMessage));
         }
     }
 } 
