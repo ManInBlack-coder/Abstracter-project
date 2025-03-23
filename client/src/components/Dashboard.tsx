@@ -204,7 +204,7 @@ export const Dashboard = () => {
                 </div>
                 <div className="flex space-x-4">
                   <button
-                    onClick={() => navigate('/tests')}
+                    onClick={() => navigate('/test-list')}
                     className="px-6 py-2.5 bg-white text-indigo-600 rounded-lg font-semibold shadow-md hover:bg-indigo-50 transition-all duration-200 ease-in-out transform hover:scale-105"
                   >
                     Testid

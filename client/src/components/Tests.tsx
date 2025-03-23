@@ -158,7 +158,7 @@ export const Tests = () => {
 
   const handleExitTest = () => {
     if (session) {
-      navigate('/dashboard');
+      navigate('/test-list');
     }
   };
 
@@ -245,10 +245,10 @@ export const Tests = () => {
                 </button>
               )}
               <button
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/test-list')}
                 className="px-6 py-2.5 bg-white text-blue-600 rounded-lg font-semibold shadow-md hover:bg-blue-50 transition-all duration-200"
               >
-                Tagasi Avalehele
+                Tagasi testide valikusse
               </button>
             </div>
           </div>
