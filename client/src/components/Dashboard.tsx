@@ -27,27 +27,32 @@ export const Dashboard = () => {
   useEffect(() => {
     const initializeDashboard = async () => {
       const maxRetries = 8;
-      const retryDelay = 1000;
+      const retryDelay = 2000;
 
       const fetchDataWithRetry = async (retryCount = 0) => {
+        if (!authService.isAuthenticated()) {
+          console.log('Not authenticated, redirecting to login');
+          navigate('/login');
+          return;
+        }
+
         const id = authService.getUserId();
-        const name = authService.getUsername();
         const token = localStorage.getItem('token');
 
         if (!id || !token) {
-          console.log('No token or user ID found, redirecting to login');
+          console.log('Missing credentials:', { hasId: !!id, hasToken: !!token });
           navigate('/login');
           return;
         }
 
         try {
           setUserId(id);
-          setUsername(name);
+          setUsername(authService.getUsername());
 
           const client = new Client({
             webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
             debug: function (str: string) {
-              console.log(str);
+              console.log('WebSocket Debug:', str);
             },
             reconnectDelay: 5000,
             heartbeatIncoming: 4000,
@@ -59,44 +64,64 @@ export const Dashboard = () => {
               console.log('Connected to WebSocket');
               
               try {
+                // Subscribe to stats updates
                 client.subscribe('/topic/stats/' + id, (message: Message) => {
+                  console.log('Received stats update:', message.body);
                   const newStats = JSON.parse(message.body) as CategoryStats[];
                   setStats(newStats);
                 }, { Authorization: `Bearer ${token}` });
 
-                const headers = new Headers({
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json'
+                // Fetch initial data
+                console.log('Fetching initial data with token:', token.substring(0, 20) + '...');
+                
+                // First try stats
+                const statsResponse = await fetch(`http://localhost:8080/api/stats/${id}`, {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  }
                 });
 
-                const [statsResponse, recommendationResponse] = await Promise.all([
-                  fetch(`http://localhost:8080/api/stats/${id}`, {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'include'
-                  }),
-                  fetch(`http://localhost:8080/api/recommendation/${id}`, {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'include'
-                  })
-                ]);
+                console.log('Stats response status:', statsResponse.status);
 
-                if (statsResponse.status === 403 || recommendationResponse.status === 403) {
-                  console.log('Authentication failed, redirecting to login');
-                  navigate('/login');
-                  return;
-                }
-
-                if (!statsResponse.ok || !recommendationResponse.ok) {
-                  throw new Error('Failed to fetch data');
+                if (!statsResponse.ok) {
+                  if (statsResponse.status === 403) {
+                    console.error('Stats authentication failed');
+                    const errorText = await statsResponse.text();
+                    console.error('Error details:', errorText);
+                    authService.logout();
+                    navigate('/login');
+                    return;
+                  }
+                  throw new Error('Failed to fetch stats');
                 }
 
                 const statsData = await statsResponse.json();
-                const recommendationData = await recommendationResponse.json();
-
+                console.log('Stats data received:', statsData);
                 setStats(statsData);
-                setRecommendation(recommendationData);
+
+                // Try recommendations
+                const recommendationResponse = await fetch(`http://localhost:8080/api/recommendation/${id}`, {
+                  method: 'GET',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  }
+                });
+
+                if (recommendationResponse.ok) {
+                  const recommendationData = await recommendationResponse.json();
+                  console.log('Recommendation data received');
+                  setRecommendation(recommendationData);
+                } else {
+                  console.error('Failed to fetch recommendation:', recommendationResponse.status);
+                  const errorText = await recommendationResponse.text();
+                  console.error('Error details:', errorText);
+                }
+
                 setIsLoading(false);
               } catch (error) {
                 console.error('Error fetching data:', error);
@@ -104,9 +129,10 @@ export const Dashboard = () => {
                   console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
                   setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
                 } else {
-                  console.log('Max retries reached, redirecting to login');
-                  alert('Application has crashed. Directing to login page.');
-                  navigate('/login');
+                  console.log('Max retries reached');
+                  if (!authService.isAuthenticated()) {
+                    navigate('/login');
+                  }
                 }
               }
             },
@@ -138,6 +164,7 @@ export const Dashboard = () => {
           if (retryCount < maxRetries) {
             setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
           } else {
+            authService.logout();
             navigate('/login');
           }
         }

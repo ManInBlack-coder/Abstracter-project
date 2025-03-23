@@ -11,12 +11,19 @@ export const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log('Submitting login form...');
       const response = await authService.login(email, password);
+      console.log('Login successful:', response);
       if (response.userId) {
         navigate('/dashboard');
       }
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      console.error('Login error:', err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Sisselogimine ebaõnnestus. Palun kontrollige oma andmeid.');
+      }
     }
   };
 
