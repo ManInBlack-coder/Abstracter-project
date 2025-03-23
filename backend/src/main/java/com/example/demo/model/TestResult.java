@@ -2,18 +2,22 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Table(name = "test_result")
 public class TestResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private Long userId;
-    private Long questionId;
-    private boolean correct;
-    private double timeTaken;
+    @Column(columnDefinition = "uuid")
+    private UUID userId;
+    
+    private Integer questionId;
     private String questionType;
+    private Boolean correct;
+    private Double timeTaken;
     private LocalDateTime timestamp;
 
     public Long getId() {
@@ -24,36 +28,20 @@ public class TestResult {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
     }
 
-    public Long getQuestionId() {
+    public Integer getQuestionId() {
         return questionId;
     }
 
-    public void setQuestionId(Long questionId) {
+    public void setQuestionId(Integer questionId) {
         this.questionId = questionId;
-    }
-
-    public boolean isCorrect() {
-        return correct;
-    }
-
-    public void setCorrect(boolean correct) {
-        this.correct = correct;
-    }
-
-    public double getTimeTaken() {
-        return timeTaken;
-    }
-
-    public void setTimeTaken(double timeTaken) {
-        this.timeTaken = timeTaken;
     }
 
     public String getQuestionType() {
@@ -62,6 +50,22 @@ public class TestResult {
 
     public void setQuestionType(String questionType) {
         this.questionType = questionType;
+    }
+
+    public Boolean getCorrect() {
+        return correct;
+    }
+
+    public void setCorrect(Boolean correct) {
+        this.correct = correct;
+    }
+
+    public Double getTimeTaken() {
+        return timeTaken;
+    }
+
+    public void setTimeTaken(Double timeTaken) {
+        this.timeTaken = timeTaken;
     }
 
     public LocalDateTime getTimestamp() {

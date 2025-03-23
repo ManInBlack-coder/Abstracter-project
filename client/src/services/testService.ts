@@ -5,22 +5,37 @@ interface TestResult {
 }
 
 interface MLResponse {
-    userId: number;
+    userId: string;
     recommendations: string[];
     strengths: string[];
     weaknesses: string[];
     confidence_score: number;
 }
 
-class TestService {
-    private readonly ML_API_URL = 'http://localhost:8000';
+interface Test {
+    id: number;
+    question: string;
+    options: string[];
+    correct_answer: string;
+    explanation: string;
+    category: string;
+}
 
-    async submitTestResults(userId: number, results: TestResult[]): Promise<MLResponse> {
+class TestService {
+    private readonly API_URL = 'http://localhost:8080/api';
+
+    async submitTestResults(userId: string, results: TestResult[]): Promise<MLResponse> {
         try {
-            const response = await fetch(`${this.ML_API_URL}/predict`, {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+
+            const response = await fetch(`${this.API_URL}/submit-test`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     userId,
@@ -39,17 +54,9 @@ class TestService {
         }
     }
 
-    // Määra küsimuse tüüp vastavalt küsimuse sisule
-    determineQuestionType(question: string): string {
-        if (question.includes('sequence') || question.includes('pattern') || question.includes('next')) {
-            return 'SEQUENCE';
-        } else if (question.includes('analogy') || question.includes('is to')) {
-            return 'ANALOGY';
-        } else if (question.toLowerCase().includes('which') && 
-                  (question.includes('belong') || question.includes('different') || question.includes('odd'))) {
-            return 'CATEGORIZATION';
-        }
-        return 'PATTERN'; // Default tüüp
+    // Võta küsimuse kategooria otse testi objektist
+    determineQuestionType(test: Test): string {
+        return test.category;
     }
 }
 

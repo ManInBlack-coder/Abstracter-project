@@ -2,20 +2,23 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
+@Table(name = "user_recommendation")
 public class UserRecommendation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private Long userId;
+    @Column(columnDefinition = "uuid")
+    private UUID userId;
+    
+    private Double confidenceScore;
     private String recommendationType;
     private String recommendationText;
-    private double confidenceScore;
     private LocalDateTime timestamp;
 
-    
     public Long getId() {
         return id;
     }
@@ -24,12 +27,20 @@ public class UserRecommendation {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UUID userId) {
         this.userId = userId;
+    }
+
+    public Double getConfidenceScore() {
+        return confidenceScore;
+    }
+
+    public void setConfidenceScore(Double confidenceScore) {
+        this.confidenceScore = confidenceScore;
     }
 
     public String getRecommendationType() {
@@ -46,14 +57,6 @@ public class UserRecommendation {
 
     public void setRecommendationText(String recommendationText) {
         this.recommendationText = recommendationText;
-    }
-
-    public double getConfidenceScore() {
-        return confidenceScore;
-    }
-
-    public void setConfidenceScore(double confidenceScore) {
-        this.confidenceScore = confidenceScore;
     }
 
     public LocalDateTime getTimestamp() {

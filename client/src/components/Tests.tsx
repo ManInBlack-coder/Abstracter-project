@@ -1,6 +1,7 @@
 import  { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { testService } from '../services/testService';
+import { authService } from '../services/authService';
 import testsData from '../data/tests.json';
 import { AbstractThink } from './AbstractThink';
 
@@ -10,6 +11,7 @@ interface Test {
   options: string[];
   correct_answer: string;
   explanation: string;
+  category: string;
 }
 
 interface TestSession {
@@ -44,6 +46,12 @@ export const Tests = () => {
   const [showPrediction, setShowPrediction] = useState(false);
 
   useEffect(() => {
+    // Kontrolli autentimist
+    if (!authService.isAuthenticated()) {
+      navigate('/login');
+      return;
+    }
+
     // Proovi laadida salvestatud sessioon
     const savedSession = localStorage.getItem('testSession');
     if (savedSession) {
@@ -51,7 +59,7 @@ export const Tests = () => {
       setSession(parsedSession);
       setCurrentTest(parsedSession.questions[parsedSession.currentQuestionIndex]);
     }
-  }, []);
+  }, [navigate]);
 
   const handleStartTest = () => {
     console.log('handleStartTest called');
@@ -97,7 +105,7 @@ export const Tests = () => {
 
     // Lisa tulemus
     const result: TestResult = {
-      questionType: testService.determineQuestionType(currentTest.question),
+      questionType: testService.determineQuestionType(currentTest),
       correct,
       timeTaken
     };
@@ -107,7 +115,11 @@ export const Tests = () => {
     // Kui on 20 vastust olemas, küsi ennustust
     if (testResults.length >= 19) {
       try {
-        const mlResponse = await testService.submitTestResults(1, [...testResults, result]);
+        const userId = authService.getUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
+        const mlResponse = await testService.submitTestResults(userId, [...testResults, result]);
         setPrediction(mlResponse);
         setShowPrediction(true);
       } catch (error) {

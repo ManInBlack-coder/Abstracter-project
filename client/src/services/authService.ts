@@ -2,6 +2,7 @@ interface AuthResponse {
   message: string;
   userId?: string;
   username?: string;
+  token?: string;
 }
 
 export const authService = {
@@ -40,6 +41,9 @@ export const authService = {
       if (data.username) {
         localStorage.setItem('username', data.username);
       }
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
     }
     return data;
   },
@@ -47,10 +51,11 @@ export const authService = {
   logout() {
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
+    localStorage.removeItem('token');
   },
 
   isAuthenticated(): boolean {
-    return localStorage.getItem('userId') !== null;
+    return localStorage.getItem('userId') !== null && localStorage.getItem('token') !== null;
   },
 
   getUserId(): string | null {
@@ -59,5 +64,9 @@ export const authService = {
 
   getUsername(): string | null {
     return localStorage.getItem('username');
+  },
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 }; 

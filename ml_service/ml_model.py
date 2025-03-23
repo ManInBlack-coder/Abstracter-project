@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 class AbstractThinkingAnalyzer:
     def __init__(self):
@@ -134,9 +134,12 @@ def predict():
         data = request.get_json()
         logger.debug(f"Received data: {data}")
         
+        if not data or 'results' not in data:
+            return jsonify({"error": "Invalid request data"}), 400
+            
         analysis = analyzer.analyze_patterns(data['results'])
         response = {
-            'userId': data['userId'],
+            'userId': data.get('userId'),
             **analysis
         }
         
@@ -147,4 +150,4 @@ def predict():
 
 if __name__ == '__main__':
     logger.info("Starting Flask server...")
-    app.run(port=8000, debug=True)
+    app.run(port=5001, debug=True, host='0.0.0.0')

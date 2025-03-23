@@ -11,7 +11,7 @@ import java.util.List;
 
 @Service
 public class MLService {
-    private final String ML_SERVICE_URL = "http://localhost:5000";
+    private final String ML_SERVICE_URL = "http://localhost:5001";
     private final RestTemplate restTemplate;
     
     @Autowired
