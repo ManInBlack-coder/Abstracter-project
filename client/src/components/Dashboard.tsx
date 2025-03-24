@@ -64,6 +64,14 @@ export const Dashboard = () => {
             connectHeaders: {
               Authorization: `Bearer ${token}`
             },
+            beforeConnect: () => {
+              const currentToken = localStorage.getItem('token');
+              if (currentToken) {
+                client.connectHeaders = {
+                  Authorization: `Bearer ${currentToken}`
+                };
+              }
+            },
             onConnect: async () => {
               console.log('Connected to WebSocket');
               
@@ -265,7 +273,32 @@ export const Dashboard = () => {
                 </div>
               </div>
             </div>
-
+         {/* Soovitused */}
+         {recommendation && (
+                  <div className="md:col-span-2 bg-white rounded-xl p-6 shadow-lg mb-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Viimase testi soorituse põhjal soovitused</h3>
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <div className="flex items-center mb-2">
+                        <div className="flex-shrink-0">
+                          <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <p className="ml-3 text-sm text-blue-700">
+                          {recommendation.recommendationText}
+                        </p>
+                      </div>
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-600">
+                          Tugevused: {recommendation.recommendationType}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Usaldusscore: {(recommendation.confidenceScore * 100).toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
             {/* Content Section */}
             <div className="px-6 py-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -294,37 +327,12 @@ export const Dashboard = () => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Testid</h3>
                   <div className="bg-blue-50 rounded-lg p-4">
                     <p className="text-lg text-gray-800">
-                      Kokku sooritatud teste: {stats.reduce((sum, stat) => sum + stat.totalAttempts, 0)}
+                      Kokku sooritatud teste: {stats.reduce((sum, stat) => sum + stat.totalAttempts / 4, 0)}
                     </p>
                   </div>
                 </div>
 
-                {/* Soovitused */}
-                {recommendation && (
-                  <div className="md:col-span-2 bg-white rounded-xl p-6 shadow-lg mb-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Viimase testi soorituse põhjal soovitused</h3>
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <div className="flex items-center mb-2">
-                        <div className="flex-shrink-0">
-                          <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <p className="ml-3 text-sm text-blue-700">
-                          {recommendation.recommendationText}
-                        </p>
-                      </div>
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-600">
-                          Tugevused: {recommendation.recommendationType}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Usaldusscore: {(recommendation.confidenceScore * 100).toFixed(1)}%
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+              
 
                 {/* Detailne statistika */}
                 <div className="md:col-span-2 bg-white rounded-xl p-6 shadow-lg">
@@ -332,10 +340,10 @@ export const Dashboard = () => {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {stats.map((stat) => (
                       <div key={stat.category} className="bg-gray-50 rounded-lg p-4">
-                        <h4 className="font-medium text-gray-800">{stat.category}</h4>
-                        <p className="text-sm text-gray-600">Keskmine tulemus: {stat.averagePercentage.toFixed(1)}%</p>
-                        <p className="text-sm text-gray-600">Keskmine aeg: {stat.averageTimeSeconds.toFixed(1)}s</p>
-                        <p className="text-sm text-gray-600">Katsete arv: {stat.totalAttempts}</p>
+                        <h3 className="font-medium text-gray-800">{stat.category}</h3>
+                        <p className="text-sm text-gray-600 ">Keskmine tulemus: {stat.averagePercentage.toFixed(1)}%</p>
+                        <p className="text-sm text-gray-600 ">Keskmine aeg: {stat.averageTimeSeconds.toFixed(1)}s</p>
+                        <p className="text-sm text-gray-600 ">Katsete arv: {stat.totalAttempts}</p>
                       </div>
                     ))}
                   </div>
