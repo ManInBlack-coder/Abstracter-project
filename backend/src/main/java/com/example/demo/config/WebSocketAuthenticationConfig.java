@@ -16,6 +16,7 @@ import com.example.demo.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -42,8 +43,14 @@ public class WebSocketAuthenticationConfig implements WebSocketMessageBrokerConf
                         if (username != null) {
                             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                             if (jwtService.isTokenValid(token, userDetails)) {
-                                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                                accessor.setUser(auth);
+                                UsernamePasswordAuthenticationToken authentication = 
+                                    new UsernamePasswordAuthenticationToken(
+                                        userDetails, 
+                                        null, 
+                                        userDetails.getAuthorities()
+                                    );
+                                SecurityContextHolder.getContext().setAuthentication(authentication);
+                                accessor.setUser(authentication);
                             }
                         }
                     }

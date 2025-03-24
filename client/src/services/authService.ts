@@ -97,6 +97,8 @@ export const authService = {
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
     localStorage.removeItem('token');
+    localStorage.removeItem('stats');
+    localStorage.removeItem('recommendation');
   },
 
   isTokenExpired(): boolean {

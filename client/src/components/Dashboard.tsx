@@ -14,7 +14,27 @@ interface CategoryStats {
   averagePercentage: number;
   averageTimeSeconds: number;
   totalAttempts: number;
+  userId: string;
 }
+
+// Abifunktsioonid localStorage'i jaoks
+const getStoredStats = (): CategoryStats[] => {
+  const storedStats = localStorage.getItem(`stats`);
+  return storedStats ? JSON.parse(storedStats) : [];
+};
+
+const setStoredStats = (stats: CategoryStats[]) => {
+  localStorage.setItem(`stats`, JSON.stringify(stats));
+};
+
+const getStoredRecommendation = (): any => {
+  const storedRecommendation = localStorage.getItem(`recommendation`);
+  return storedRecommendation ? JSON.parse(storedRecommendation) : null;
+};
+
+const setStoredRecommendation = (recommendation: any) => {
+  localStorage.setItem(`recommendation`, JSON.stringify(recommendation));
+};
 
 export const Dashboard = () => {
   const [userId, setUserId] = useState<string | null>(null);
@@ -32,7 +52,6 @@ export const Dashboard = () => {
       const fetchDataWithRetry = async (retryCount = 0) => {
         console.log(`Fetch attempt ${retryCount + 1}/${maxRetries}`);
         
-        // Get fresh token on each attempt
         const token = localStorage.getItem('token');
         const id = localStorage.getItem('userId');
 
@@ -50,8 +69,19 @@ export const Dashboard = () => {
 
         try {
           setUserId(id);
-          
           setUsername(localStorage.getItem('username'));
+
+          // Lae salvestatud andmed kohe
+          const savedStats = getStoredStats();
+          if (savedStats.length > 0) {
+            setStats(savedStats);
+            setIsLoading(false);
+          }
+
+          const savedRecommendation = getStoredRecommendation();
+          if (savedRecommendation) {
+            setRecommendation(savedRecommendation);
+          }
 
           const client = new Client({
             webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
@@ -81,94 +111,74 @@ export const Dashboard = () => {
                   console.log('Received stats update:', message.body);
                   const newStats = JSON.parse(message.body) as CategoryStats[];
                   setStats(newStats);
+                  setStoredStats(newStats); // Salvesta uued andmed localStorage'i
                 }, { Authorization: `Bearer ${token}` });
 
-                // Fetch initial data
-                console.log('Fetching initial data with token:', token.substring(0, 20) + '...');
-                
-                // First try stats
-                const statsResponse = await fetch(`http://localhost:8080/api/stats/${id}`, {
-                  method: 'GET',
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                  }
-                });
-
-                console.log('Stats response status:', statsResponse.status);
-
-                if (!statsResponse.ok) {
-                  if (statsResponse.status === 403) {
-                    console.error('Stats authentication failed');
-                    const errorText = await statsResponse.text();
-                    console.error('Error details:', errorText);
-                    
-                    // Instead of immediate logout, try to retry
-                    if (retryCount < maxRetries) {
-                      console.log('Auth failed, retrying...');
-                      await new Promise(resolve => setTimeout(resolve, retryDelay));
-                      return fetchDataWithRetry(retryCount + 1);
-                    } else {
-                      console.log('Max retries reached after auth failure');
-                      authService.logout();
-                      navigate('/login');
-                      return;
+                // Fetch initial data if not in localStorage
+                if (savedStats.length === 0) {
+                  console.log('Fetching initial stats data...');
+                  const statsResponse = await fetch(`http://localhost:8080/api/stats/${id}`, {
+                    method: 'GET',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json'
                     }
+                  });
+
+                  if (statsResponse.ok) {
+                    const statsData = await statsResponse.json();
+                    console.log('Initial stats data received:', statsData);
+                    setStats(statsData);
+                    setStoredStats(statsData);
                   }
-                  throw new Error('Failed to fetch stats');
                 }
 
-                const statsData = await statsResponse.json();
-                console.log('Stats data received:', statsData);
-                setStats(statsData);
+                // Fetch recommendation if not in localStorage
+                if (!savedRecommendation) {
+                  console.log('Fetching initial recommendation data...');
+                  const recommendationResponse = await fetch(`http://localhost:8080/api/recommendation/${id}`, {
+                    method: 'GET',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                      'Accept': 'application/json'
+                    }
+                  });
 
-                // Try recommendations
-                const recommendationResponse = await fetch(`http://localhost:8080/api/recommendation/${id}`, {
-                  method: 'GET',
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                  if (recommendationResponse.ok) {
+                    const recommendationData = await recommendationResponse.json();
+                    console.log('Initial recommendation data received');
+                    setRecommendation(recommendationData);
+                    setStoredRecommendation(recommendationData);
                   }
-                });
-
-                if (recommendationResponse.ok) {
-                  const recommendationData = await recommendationResponse.json();
-                  console.log('Recommendation data received');
-                  setRecommendation(recommendationData);
-                } else {
-                  console.error('Failed to fetch recommendation:', recommendationResponse.status);
-                  const errorText = await recommendationResponse.text();
-                  console.error('Error details:', errorText);
                 }
 
                 setIsLoading(false);
               } catch (error) {
                 console.error('Error fetching data:', error);
-                if (retryCount < maxRetries) {
+                // Kui andmete laadimine ebaõnnestub, aga meil on cached andmed, siis näitame neid
+                if (savedStats.length > 0) {
+                  setIsLoading(false);
+                } else if (retryCount < maxRetries) {
                   console.log(`Retry attempt ${retryCount + 1} of ${maxRetries}`);
                   await new Promise(resolve => setTimeout(resolve, retryDelay));
                   return fetchDataWithRetry(retryCount + 1);
-                } else {
-                  console.log('Max retries reached');
-                  authService.logout();
-                  navigate('/login');
                 }
               }
             },
             onStompError: (frame) => {
               console.error('STOMP error:', frame);
-              setIsLoading(false);
-              if (retryCount < maxRetries) {
-                setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
+              // Kui on cached andmed, siis näitame neid
+              if (savedStats.length > 0) {
+                setIsLoading(false);
               }
             },
             onWebSocketError: (event) => {
               console.error('WebSocket error:', event);
-              setIsLoading(false);
-              if (retryCount < maxRetries) {
-                setTimeout(() => fetchDataWithRetry(retryCount + 1), retryDelay);
+              // Kui on cached andmed, siis näitame neid
+              if (savedStats.length > 0) {
+                setIsLoading(false);
               }
             }
           });
@@ -182,13 +192,14 @@ export const Dashboard = () => {
           };
         } catch (error) {
           console.error('Error in dashboard initialization:', error);
-          if (retryCount < maxRetries) {
+          // Kui on cached andmed, siis näitame neid
+          const cachedStats = getStoredStats();
+          if (cachedStats.length > 0) {
+            setStats(cachedStats);
+            setIsLoading(false);
+          } else if (retryCount < maxRetries) {
             await new Promise(resolve => setTimeout(resolve, retryDelay));
             return fetchDataWithRetry(retryCount + 1);
-          } else {
-            console.log('Max retries reached in error handler');
-            authService.logout();
-            navigate('/login');
           }
         }
       };
