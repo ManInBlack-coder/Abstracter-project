@@ -5,7 +5,6 @@ import { Client, Message } from '@stomp/stompjs';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 import SockJS from 'sockjs-client';
-import { LandingPage } from './LandingPage';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -212,7 +211,7 @@ export const Dashboard = () => {
 
   const handleLogout = () => {
     authService.logout();
-    navigate('/landingpage');
+    navigate('/landing-page');
   };
 
   const pieChartData = {

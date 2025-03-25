@@ -57,6 +57,14 @@ public class TestSessionResult {
         this.sessionTimestamp = sessionTimestamp;
     }
 
+    public Integer getTotalQuestions() {
+        return totalQuestions;
+    }
+
+    public void setTotalQuestions(Integer totalQuestions) {
+        this.totalQuestions = totalQuestions;
+    }
+
     public Double getSequencePercentage() {
         return sequencePercentage;
     }
@@ -87,13 +95,5 @@ public class TestSessionResult {
 
     public void setCategorizationPercentage(Double categorizationPercentage) {
         this.categorizationPercentage = categorizationPercentage;
-    }
-
-    public Integer getTotalQuestions() {
-        return totalQuestions;
-    }
-
-    public void setTotalQuestions(Integer totalQuestions) {
-        this.totalQuestions = totalQuestions;
     }
 } 
