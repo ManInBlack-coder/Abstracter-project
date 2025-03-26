@@ -6,6 +6,7 @@ interface Test {
   options: string[];
   correct_answer: string;
   explanation: string;
+  category: string;
 }
 
 interface AbstractThinkProps {
@@ -44,10 +45,16 @@ export const AbstractThink = ({
             </div>
           </div>
           <div className="ml-4">
-            <h2 className="text-lg font-medium text-gray-900">Abstraktne Mõtlemine</h2>
+            <h2 className="text-lg font-medium text-gray-900">Abstraktne Mõtlemine </h2>
             <p className="text-sm text-gray-500">Vali õige vastus</p>
+            
           </div>
+          
+         
         </div>
+        <div className="ml-4 mt-4 flex-1 items-center">
+            <p>Küsimuse kategooria: <a className='font-bold'>{currentTest?.category}</a></p>
+          </div>
       </div>
 
       {/* Content */}
@@ -100,7 +107,7 @@ export const AbstractThink = ({
                   {isCorrect ? 'Õige vastus!' : 'Vale vastus'}
                 </h4>
               </div>
-              <p className="text-gray-700 mb-4">{currentTest.explanation}</p>
+              <p className="text-gray-700  mb-4">{currentTest.explanation}</p>
               <div className="flex justify-end">
                 {!isLastQuestion ? (
                   <button

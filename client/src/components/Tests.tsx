@@ -12,6 +12,7 @@ interface Test {
   correct_answer: string;
   explanation: string;
   category: string;
+  
 }
 
 interface TestSession {
@@ -190,6 +191,8 @@ export const Tests = () => {
             {prediction.strengths.length > 0 ? 
               prediction.strengths.map((strength, index) => (
                 <li key={index} className="mb-2">{strength}</li>
+
+                
               )) : 
               <p>Kahjuks ei tuvastatud tugevusi</p>
             }
@@ -207,7 +210,7 @@ export const Tests = () => {
 
         <div className="mb-6">
           <p className="text-lg">
-            Ennustuse usaldusscore: {(prediction.confidence_score * 100).toFixed(1)}%
+            Ennustuse usaldusscore: {(prediction.confidence_score * 100).toFixed(1)} %
           </p>
         </div>
 

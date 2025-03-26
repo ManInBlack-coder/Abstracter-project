@@ -36,7 +36,7 @@ const setStoredRecommendation = (recommendation: any) => {
 };
 
 export const Dashboard = () => {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [_, setUserId] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [stats, setStats] = useState<CategoryStats[]>([]);
   const [recommendation, setRecommendation] = useState<any>(null);
@@ -208,6 +208,13 @@ export const Dashboard = () => {
 
     initializeDashboard();
   }, [navigate]);
+
+  useEffect(() => {
+    if (stats.length > 0) {
+      console.log('Stats updated, saving to localStorage:', stats);
+      setStoredStats(stats);
+    }
+  }, [stats]);
 
   const handleLogout = () => {
     authService.logout();
