@@ -307,11 +307,21 @@ export const Dashboard = () => {
                       </div>
                       <div className="mt-2">
                         <p className="text-sm text-gray-600">
-                          Tugevused: {recommendation.recommendationType}
+                          Liik: {recommendation.recommendationType}
                         </p>
                         <p className="text-sm text-gray-600">
                           Usaldusscore: {(recommendation.confidenceScore * 100).toFixed(1)}%
                         </p>
+                        {recommendation.strengths && recommendation.strengths.length > 0 && (
+                          <p className="text-sm text-gray-600">
+                            Tugevused: {recommendation.strengths.join(', ')}
+                          </p>
+                        )}
+                        {recommendation.weaknesses && recommendation.weaknesses.length > 0 && (
+                          <p className="text-sm text-gray-600">
+                            Nõrkused: {recommendation.weaknesses.join(', ')}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>

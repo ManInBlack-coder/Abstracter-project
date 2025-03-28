@@ -3,18 +3,36 @@ package com.example.demo.dto;
 import java.util.List;
 
 public class RecommendationResponse {
-    private Long userId;
+    private String userId;
+    private String recommendationText;
+    private String recommendationType;
     private List<String> recommendations;
     private List<String> strengths;
     private List<String> weaknesses;
     private double confidenceScore;
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getRecommendationText() {
+        return recommendationText;
+    }
+
+    public void setRecommendationText(String recommendationText) {
+        this.recommendationText = recommendationText;
+    }
+
+    public String getRecommendationType() {
+        return recommendationType;
+    }
+
+    public void setRecommendationType(String recommendationType) {
+        this.recommendationType = recommendationType;
     }
 
     public List<String> getRecommendations() {

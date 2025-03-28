@@ -6,10 +6,11 @@ interface TestResult {
 
 interface MLResponse {
     userId: string;
-    recommendations: string[];
+    recommendationText: string;
+    recommendationType: string;
+    confidenceScore: number;
     strengths: string[];
     weaknesses: string[];
-    confidence_score: number;
 }
 
 interface Test {
@@ -31,6 +32,16 @@ class TestService {
                 throw new Error('No authentication token found');
             }
 
+            // Kontrollime, et kõigil tulemustel oleks kategooria (questionType)
+            const validResults = results.map(result => {
+                // Tagame, et questionType on alati olemas
+                if (!result.questionType) {
+                    console.warn('Test result missing questionType, using default category');
+                    return { ...result, questionType: 'PATTERN' };
+                }
+                return result;
+            });
+
             const response = await fetch(`${this.API_URL}/submit-test`, {
                 method: 'POST',
                 headers: {
@@ -39,7 +50,7 @@ class TestService {
                 },
                 body: JSON.stringify({
                     userId,
-                    results
+                    results: validResults
                 })
             });
 
@@ -47,7 +58,15 @@ class TestService {
                 throw new Error('Network response was not ok');
             }
 
-            return await response.json();
+            // Saadame tulemused ML teenusele
+            const mlResponse = await response.json();
+            
+            // Salvestame soovitused localStorage'i
+            if (mlResponse) {
+                localStorage.setItem('recommendation', JSON.stringify(mlResponse));
+            }
+            
+            return mlResponse;
         } catch (error) {
             console.error('Error submitting test results:', error);
             throw error;

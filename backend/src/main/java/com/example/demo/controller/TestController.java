@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -61,14 +62,53 @@ public class TestController {
             // Küsi soovitused ML teenuselt
             RecommendationResponse mlResponse = mlService.generateRecommendation(results);
 
-            // Salvesta soovitus
-            UserRecommendation recommendation = new UserRecommendation();
-            recommendation.setUserId(userId);
-            recommendation.setConfidenceScore(mlResponse.getConfidenceScore());
-            recommendation.setRecommendationType(String.join(", ", mlResponse.getStrengths()));
-            recommendation.setRecommendationText(String.join(", ", mlResponse.getRecommendations()));
-            recommendation.setTimestamp(LocalDateTime.now());
+            // Kontrolli kas kasutajal on juba soovitus olemas
+            Optional<UserRecommendation> existingRecommendation = 
+                recommendationRepository.findFirstByUserIdOrderByTimestampDesc(userId);
 
+            UserRecommendation recommendation;
+            if (existingRecommendation.isPresent()) {
+                // Uuenda olemasolevat soovitust
+                recommendation = existingRecommendation.get();
+                recommendation.setConfidenceScore(mlResponse.getConfidenceScore());
+                
+                // Kasuta uusi välju, kui need on olemas, muidu kasuta vanu
+                if (mlResponse.getRecommendationType() != null) {
+                    recommendation.setRecommendationType(mlResponse.getRecommendationType());
+                } else if (mlResponse.getStrengths() != null && !mlResponse.getStrengths().isEmpty()) {
+                    recommendation.setRecommendationType(String.join(", ", mlResponse.getStrengths()));
+                }
+                
+                if (mlResponse.getRecommendationText() != null) {
+                    recommendation.setRecommendationText(mlResponse.getRecommendationText());
+                } else if (mlResponse.getRecommendations() != null && !mlResponse.getRecommendations().isEmpty()) {
+                    recommendation.setRecommendationText(String.join(", ", mlResponse.getRecommendations()));
+                }
+                
+                recommendation.setTimestamp(LocalDateTime.now());
+            } else {
+                // Loo uus soovitus
+                recommendation = new UserRecommendation();
+                recommendation.setUserId(userId);
+                recommendation.setConfidenceScore(mlResponse.getConfidenceScore());
+                
+                // Kasuta uusi välju, kui need on olemas, muidu kasuta vanu
+                if (mlResponse.getRecommendationType() != null) {
+                    recommendation.setRecommendationType(mlResponse.getRecommendationType());
+                } else if (mlResponse.getStrengths() != null && !mlResponse.getStrengths().isEmpty()) {
+                    recommendation.setRecommendationType(String.join(", ", mlResponse.getStrengths()));
+                }
+                
+                if (mlResponse.getRecommendationText() != null) {
+                    recommendation.setRecommendationText(mlResponse.getRecommendationText());
+                } else if (mlResponse.getRecommendations() != null && !mlResponse.getRecommendations().isEmpty()) {
+                    recommendation.setRecommendationText(String.join(", ", mlResponse.getRecommendations()));
+                }
+                
+                recommendation.setTimestamp(LocalDateTime.now());
+            }
+
+            // Salvesta soovitus andmebaasi
             recommendationRepository.save(recommendation);
 
             return ResponseEntity.ok(mlResponse);

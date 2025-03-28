@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MLService {
@@ -18,7 +19,13 @@ public class MLService {
     }
     
     public RecommendationResponse generateRecommendation(List<TestResult> userResults) {
-        MLRequest request = new MLRequest(userResults);
+        // Võtame userId esimesest tulemusest, eeldades et kõik tulemused on sama kasutaja omad
+        UUID userId = userResults.get(0).getUserId();
+        
+        // Loome ML päringu objekti
+        MLRequest request = new MLRequest(userResults, userId.toString());
+        
+        // Saadame päringu ML teenusele
         return restTemplate.postForObject(
             ML_SERVICE_URL + "/predict",
             request,
