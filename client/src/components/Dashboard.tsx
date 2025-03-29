@@ -65,7 +65,6 @@ export const Dashboard = () => {
             return;
           }
         }
-
         try {
           setUserId(id);
           setUsername(localStorage.getItem('username'));

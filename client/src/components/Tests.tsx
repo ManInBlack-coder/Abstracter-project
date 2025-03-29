@@ -121,7 +121,16 @@ export const Tests = () => {
           throw new Error('User not authenticated');
         }
         const mlResponse = await testService.submitTestResults(userId, [...testResults, result]);
-        setPrediction(mlResponse);
+        
+        // Teisendame MLResponse objekti MLPrediction objektiks
+        const prediction: MLPrediction = {
+          recommendations: mlResponse.recommendationText ? [mlResponse.recommendationText] : [],
+          strengths: mlResponse.strengths || [],
+          weaknesses: mlResponse.weaknesses || [],
+          confidence_score: mlResponse.confidenceScore
+        };
+        
+        setPrediction(prediction);
         setShowPrediction(true);
       } catch (error) {
         console.error('Error getting ML prediction:', error);

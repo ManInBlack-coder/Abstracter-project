@@ -32,6 +32,7 @@ export const AbstractThink = ({
   onEndTest,
   isLastQuestion
 }: AbstractThinkProps) => {
+  
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
@@ -46,11 +47,8 @@ export const AbstractThink = ({
           </div>
           <div className="ml-4">
             <h2 className="text-lg font-medium text-gray-900">Abstraktne Mõtlemine </h2>
-            <p className="text-sm text-gray-500">Vali õige vastus</p>
-            
+            <p className="text-sm text-gray-500">Vali õige vastus</p>           
           </div>
-          
-         
         </div>
         <div className="ml-4 mt-4 flex-1 items-center">
             <p>Küsimuse kategooria: <a className='font-bold'>{currentTest?.category}</a></p>
